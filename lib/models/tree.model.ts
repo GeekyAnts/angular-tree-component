@@ -346,7 +346,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
     }
   }
 
-  @action filterNodes(filter, autoShow = true) {
+  @action filterNodes(filter, autoShow = true, showChildren = true) {
     let filterFn;
 
     if (!filter) {
@@ -367,7 +367,7 @@ export class TreeModel implements ITreeModel, OnDestroy {
     }
 
     const ids = {};
-    this.roots.forEach((node) => this._filterNode(ids, node, filterFn, autoShow));
+    this.roots.forEach((node) => this._filterNode(ids, node, filterFn, autoShow, showChildren));
     this.hiddenNodeIds = ids;
     this.fireEvent({ eventName: TREE_EVENTS.changeFilter });
   }
@@ -470,24 +470,41 @@ export class TreeModel implements ITreeModel, OnDestroy {
       this._calculateExpandedNodes();
   }
 
+
+
   // private methods
-  private _filterNode(ids, node, filterFn, autoShow) {
+  private _filterNode(ids, node, filterFn, autoShow, showChildren, nodeFound = false) {
     // if node passes function then it's visible
     let isVisible = filterFn(node);
+
+    // mark nodeFound as true [to be passed to child filter iterations]
+    if (showChildren && isVisible) {
+        nodeFound = true;
+    }
 
     if (node.children) {
       // if one of node's children passes filter then this node is also visible
       node.children.forEach((child) => {
-        if (this._filterNode(ids, child, filterFn, autoShow)) {
+        if (this._filterNode(ids, child, filterFn, autoShow, showChildren, nodeFound)) {
           isVisible = true;
         }
       });
     }
 
-    // mark node as hidden
-    if (!isVisible) {
-      ids[node.id] = true;
+    if (showChildren) {
+       // Case: Additional filtering: show corresponding children hierarchy along with self and parent nodes
+        // mark node as hidden
+        if (!isVisible && !nodeFound) {
+            ids[node.id] = true;
+        }
+    } else {
+      // Case: Normal filtering
+        // mark node as hidden
+        if (!isVisible) {
+            ids[node.id] = true;
+        }
     }
+
     // auto expand parents to make sure the filtered nodes are visible
     if (autoShow && isVisible) {
       node.ensureVisible();
