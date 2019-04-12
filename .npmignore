@@ -5,8 +5,6 @@ node_modules
 example
 *webpack*conf*.js
 *karma*.js
-*.ts
-!*.d.ts
 testScreenshots
 testResults
 e2eResults
