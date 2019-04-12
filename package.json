@@ -105,9 +105,9 @@
     "typescript": "^2.9.2",
     "zone.js": "^0.8.26"
   },
-  "repository": "https://github.com/GeekyAnts/angular-tree-component.git",
+  "repository": "https://github.com/500tech/angular-tree-component.git",
   "bugs": {
-    "url": "https://github.com/GeekyAnts/angular-tree-component/issues"
+    "url": "https://github.com/500tech/angular-tree-component/issues"
   },
   "engines": {
     "node": ">=8.0.0"
